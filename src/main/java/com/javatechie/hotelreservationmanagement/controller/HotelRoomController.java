@@ -43,6 +43,10 @@ public class HotelRoomController {
     public void deleteAllHotels(){
         hotelService.deleteAllHotels();
     }
+    @DeleteMapping("/{hotelId}")
+    public void deleteHotelById(@PathVariable Long hotelId) {
+        hotelService.deleteHotelById(hotelId);
+    }
 
     @GetMapping("/nearby")
     public List<Hotel> getHotelsNearby(@RequestParam double latitude, @RequestParam double longitude, @RequestParam double radiusKm) {
