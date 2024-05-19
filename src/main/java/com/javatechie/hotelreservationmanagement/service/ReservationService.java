@@ -1,6 +1,7 @@
 package com.javatechie.hotelreservationmanagement.service;
 
 import com.javatechie.hotelreservationmanagement.entity.Reservation;
+import com.javatechie.hotelreservationmanagement.entity.Room;
 import com.javatechie.hotelreservationmanagement.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,13 +14,29 @@ import java.util.Optional;
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final RoomService roomService;
 
     @Autowired
-    public ReservationService(ReservationRepository reservationRepository) {
+    public ReservationService(ReservationRepository reservationRepository, RoomService roomService) {
         this.reservationRepository = reservationRepository;
+        this.roomService = roomService;
     }
 
     public Reservation saveReservation(Reservation reservation) {
+        Room room = roomService.getRoomById(reservation.getRoomId()).orElse(null);
+        if(reservation.getCheckOut() == null){ //if a reservation is closed
+            room.setIsAvailable(true);
+            roomService.saveRoom(room);
+            return reservationRepository.save(reservation);
+        }
+        if(room == null) {
+            return null;
+        }
+        if(!room.getIsAvailable() ){
+            return null;
+        }
+        room.setIsAvailable(false);
+        roomService.saveRoom(room);
         return reservationRepository.save(reservation);
     }
 
@@ -35,8 +52,7 @@ public class ReservationService {
         reservationRepository.deleteById(id);
     }
 
-    public boolean canModifyReservation(Long id) {
-        Optional<Reservation> reservation = reservationRepository.findById(id);
-        return reservation.map(res -> res.getCheckIn().isAfter(LocalDateTime.now().plusHours(2))).orElse(false);
+    public List<Reservation> getReservationsByHotelId(Long hotelId) {
+        return reservationRepository.findByHotelId(hotelId);
     }
 }

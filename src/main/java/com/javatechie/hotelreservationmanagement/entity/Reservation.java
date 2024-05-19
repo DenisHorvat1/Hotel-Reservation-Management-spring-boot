@@ -16,17 +16,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reservation {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
-    private Room room;
+    @Column(name = "room_id", nullable = false)
+    private Long roomId;
+
+    @Column(name = "hotel_id", nullable = false)
+    private Long hotelId;
 
     private LocalDateTime checkIn;
+
+    @Column(nullable = true) // checkOut can be null
     private LocalDateTime checkOut;
 }

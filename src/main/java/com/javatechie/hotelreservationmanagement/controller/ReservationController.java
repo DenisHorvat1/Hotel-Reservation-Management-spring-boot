@@ -29,6 +29,11 @@ public class ReservationController {
         return reservationService.getReservationById(id);
     }
 
+    @GetMapping("/hotel/{hotelId}")
+    public List<Reservation> getReservationsByHotelId(@PathVariable Long hotelId) {
+        return reservationService.getReservationsByHotelId(hotelId);
+    }
+
     @GetMapping
     public List<Reservation> getAllReservations() {
         return reservationService.getAllReservations();
@@ -41,10 +46,6 @@ public class ReservationController {
 
     @PutMapping("/{id}/cancel")
     public void cancelReservation(@PathVariable Long id) {
-        if (reservationService.canModifyReservation(id)) {
-            reservationService.deleteReservationById(id);
-        } else {
-            throw new IllegalStateException("Cannot cancel reservation less than 2 hours before check-in");
-        }
+        reservationService.deleteReservationById(id);
     }
 }
